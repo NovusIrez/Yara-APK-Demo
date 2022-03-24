@@ -1,6 +1,6 @@
-# startup_namer
+# YARA APK 
 
-A new Flutter project.
+A Flutter project for Final Year Project of BITZ
 
 ## Getting Started
 
