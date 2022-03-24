@@ -1,4 +1,4 @@
-# YARA APK 
+# Yara App 
 
 A Flutter project for Final Year Project of BITZ
 
