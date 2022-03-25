@@ -43,8 +43,8 @@ class _MyHomePageState extends State<MyHomePage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             SizedBox(
-              width: 200,
-              height: 30,
+              width: 300,
+              height: 45,
               child: ElevatedButton(
                 onPressed: () {
                   setState(() {});
@@ -56,8 +56,8 @@ class _MyHomePageState extends State<MyHomePage> {
               height: 80,
             ),
             SizedBox(
-              width: 200,
-              height: 30,
+              width: 300,
+              height: 45,
               child: ElevatedButton(
                 onPressed: () {
                   setState(() {});
@@ -70,8 +70,8 @@ class _MyHomePageState extends State<MyHomePage> {
               height: 50,
             ),
             SizedBox(
-              width: 200,
-              height: 30,
+              width: 300,
+              height: 45,
               child: ElevatedButton(
                 onPressed: () {
                   setState(() {});
