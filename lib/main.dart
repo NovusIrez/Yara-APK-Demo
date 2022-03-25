@@ -1,3 +1,4 @@
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -29,8 +30,8 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  String yarafilename = 'No YARA file has been uploaded';
-  String apkfilename = 'No APK file has been uploaded';
+  String yarafilename = 'No YARA file was chosen';
+  String apkfilename = 'No APK file was chosen';
 
   @override
   Widget build(BuildContext context) {
@@ -46,9 +47,7 @@ class _MyHomePageState extends State<MyHomePage> {
               width: 300,
               height: 45,
               child: ElevatedButton(
-                onPressed: () {
-                  setState(() {});
-                },
+                onPressed: () {},
                 child: const Text('Start'),
               ),
             ),
@@ -59,8 +58,13 @@ class _MyHomePageState extends State<MyHomePage> {
               width: 300,
               height: 45,
               child: ElevatedButton(
-                onPressed: () {
-                  setState(() {});
+                onPressed: () async {
+                  final result = await FilePicker.platform.pickFiles();
+                  if (result == null) return;
+
+                  setState(() {
+                    yarafilename = result.files.first.name;
+                  });
                 },
                 child: const Text('Upload YARA file'),
               ),
@@ -73,8 +77,13 @@ class _MyHomePageState extends State<MyHomePage> {
               width: 300,
               height: 45,
               child: ElevatedButton(
-                onPressed: () {
-                  setState(() {});
+                onPressed: () async {
+                  final result = await FilePicker.platform.pickFiles();
+                  if (result == null) return;
+
+                  setState(() {
+                    apkfilename = result.files.first.name;
+                  });
                 },
                 child: const Text('Upload APK file'),
               ),
