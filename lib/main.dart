@@ -1,9 +1,9 @@
 import 'dart:convert';
-
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 // import 'package:requests/requests.dart';
 import 'package:http/http.dart';
+import 'package:dio/dio.dart' as diopack;
 
 void main() {
   runApp(const MyApp());
@@ -37,7 +37,9 @@ class _MyHomePageState extends State<MyHomePage> {
   // String yarafilename = 'No YARA file was chosen';
   String apkfilename = 'No APK file was chosen';
   // late FilePickerResult apkFile;
-  var apkFilePath;
+  // var apkFilePath;
+  var apkfilebyte;
+  final dio = diopack.Dio();
   final url = 'https://www.virustotal.com/api/v3/files';
 
   var _postJson = [];
@@ -70,13 +72,21 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void uploadFile() async {
     try {
-      var request = MultipartRequest("POST", Uri.parse(url));
-      request.fields["x-apikey"] =
-          "56a524fdd1fcfde4168d1621c5861595e3e7c6806749c44f7d73d65ca69b6f11";
+      var formData = diopack.FormData.fromMap({
+        'file': await diopack.MultipartFile.fromBytes(apkfilebyte,
+            filename: apkfilename),
+      });
 
-      // var upload = MultipartFile.fromBytes('file', stream, length)
-    } catch (err) {
-      print('connection error');
+      var response = await dio.post(url,
+          data: formData,
+          options: diopack.Options(headers: {
+            'x-apikey':
+                '56a524fdd1fcfde4168d1621c5861595e3e7c6806749c44f7d73d65ca69b6f11'
+          }));
+
+      print(response);
+    } on diopack.DioError catch (err) {
+      print(err);
     }
   }
 
@@ -96,7 +106,7 @@ class _MyHomePageState extends State<MyHomePage> {
               child: ElevatedButton(
                 onPressed: () async {
                   // final file = apkFile.files.first;
-                  // postData();
+                  uploadFile();
                 },
                 child: const Text('Start'),
               ),
@@ -117,7 +127,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
                   setState(() {
                     apkfilename = result.files.first.name;
-                    apkFilePath = result.files.first.path!;
+                    apkfilebyte = result.files.first.bytes;
                   });
                 },
                 child: const Text('Upload APK file'),
