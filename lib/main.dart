@@ -1,7 +1,9 @@
+import 'dart:convert';
+
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 // import 'package:requests/requests.dart';
-import 'package:http/http.dart' as http;
+import 'package:http/http.dart';
 
 void main() {
   runApp(const MyApp());
@@ -34,28 +36,47 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   // String yarafilename = 'No YARA file was chosen';
   String apkfilename = 'No APK file was chosen';
-  late FilePickerResult apkFile;
+  // late FilePickerResult apkFile;
+  var apkFilePath;
+  final url = 'https://www.virustotal.com/api/v3/files';
 
-  // void Testrequest() async {
-  //   var r = await Requests.get('https://google.com');
-  //   r.raiseForStatus();
-  //   String body = r.content();
+  var _postJson = [];
 
-  // var r = await Requests.post('https://reqres.in/api/users',
-  //     body: {
-  //       'userId': 10,
-  //       'id': 91,
-  //       'title': 'aut amet sed',
-  //     },
-  //     bodyEncoding: RequestBodyEncoding.FormURLEncoded);
+  void fetchData() async {
+    try {
+      final response = await get(Uri.parse(url));
+      final jsonData = jsonDecode(response.body) as List;
+
+      setState(() {
+        _postJson = jsonData;
+      });
+    } catch (err) {
+      print('connection error');
+    }
+  }
+
+  // void postData() async {
+  //   try {
+  //     final response = await post(Uri.parse(url), body: {
+  //       "x-apikey":
+  //           "56a524fdd1fcfde4168d1621c5861595e3e7c6806749c44f7d73d65ca69b6f11",
+  //       "Content-Type":
+  //           "multipart/form-data; boundary=---011000010111000001101001",
+  //     });
+  //   } catch (err) {
+  //     print('connection error');
+  //   }
   // }
 
-  Future<http.Response> fetchGoogle() async {
-    final response = await http.get(Uri.parse('https://google.com'));
-    if (response.statusCode == 200) {
-      return response;
-    } else {
-      throw Exception('Fail');
+  void uploadFile() async {
+    try {
+      var request = MultipartRequest("POST", Uri.parse(url));
+      request.fields["x-apikey"] =
+          "56a524fdd1fcfde4168d1621c5861595e3e7c6806749c44f7d73d65ca69b6f11";
+
+      // var upload = MultipartFile.fromBytes('file', stream, length)
+    } catch (err) {
+      print('connection error');
     }
   }
 
@@ -75,8 +96,7 @@ class _MyHomePageState extends State<MyHomePage> {
               child: ElevatedButton(
                 onPressed: () async {
                   // final file = apkFile.files.first;
-                  Future<http.Response> testgoogle = fetchGoogle();
-                  // print(testgoogle);
+                  // postData();
                 },
                 child: const Text('Start'),
               ),
@@ -94,10 +114,10 @@ class _MyHomePageState extends State<MyHomePage> {
                 onPressed: () async {
                   final result = await FilePicker.platform.pickFiles();
                   if (result == null) return;
-                  apkFile = result;
 
                   setState(() {
                     apkfilename = result.files.first.name;
+                    apkFilePath = result.files.first.path!;
                   });
                 },
                 child: const Text('Upload APK file'),
