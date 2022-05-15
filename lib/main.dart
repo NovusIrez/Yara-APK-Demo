@@ -1,9 +1,9 @@
 import 'dart:convert';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart';
 import 'package:dio/dio.dart' as diopack;
 import 'package:crypto/crypto.dart';
+import 'Screen/resultscreen.dart';
 
 void main() {
   runApp(const MyApp());
@@ -54,24 +54,10 @@ class _MyHomePageState extends State<MyHomePage> {
       apkfileurl = url + "/" + apkfilehash; //file url
       var response = await dio.get(
         apkfileurl,
-        // queryParameters: {
-        //   "Accept": "application/json",
-        //   "x-apikey": xapikey,
-        //   "Access-Control-Allow-Credentials": true,
-        //   "Access-Control-Allow-Headers":
-        //       "Origin,Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token",
-        //   "Access-Control-Allow-Origin": "*",
-        //   "Access-Control-Allow-Methods": "GET , POST",
-        // },
         options: diopack.Options(
           headers: {
             "Accept": "application/json",
             "x-apikey": xapikey,
-            // "Access-Control-Allow-Credentials": true,
-            // "Access-Control-Allow-Headers":
-            //     "Origin,Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token",
-            // "Access-Control-Allow-Origin": "*",
-            // "Access-Control-Allow-Methods": "GET , POST",
           },
         ),
       );
@@ -132,7 +118,11 @@ class _MyHomePageState extends State<MyHomePage> {
               child: ElevatedButton(
                 onPressed: () async {
                   // uploadFile();
-                  fetchData();
+                  // fetchData();
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const ResultPage()),
+                  );
                 },
                 child: const Text('Start'),
               ),
