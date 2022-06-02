@@ -4,8 +4,8 @@ import 'package:path_provider/path_provider.dart';
 import 'package:flutter/material.dart';
 
 class ResultPage extends StatelessWidget {
-  ResultPage({Key? key, required this.responseback}) : super(key: key);
-  String responseback;
+  ResultPage({Key? key}) : super(key: key);
+  // String responseback;
 
   Future<String> get _localPath async {
     final directory = await getApplicationDocumentsDirectory();
@@ -39,7 +39,7 @@ class ResultPage extends StatelessWidget {
             height: 45,
             child: ElevatedButton(
               onPressed: () async {
-                writeData(responseback);
+                // writeData(responseback);
                 // const filename = 'apkdetail.txt';
                 // var file =
                 //     await File(filename).writeAsString(jsonData.toString());

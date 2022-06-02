@@ -51,11 +51,11 @@ class _MyHomePageState extends State<MyHomePage> {
   //lists of jsonData
   //  String _jsonData;
 
-  String fetchData() {
+  void fetchData() async {
     String responseback = "";
     try {
       apkfileurl = url + "/" + apkfilehash; //file url
-      var response = dio.get(
+      var response = await dio.get(
         apkfileurl,
         options: diopack.Options(
           headers: {
@@ -87,7 +87,6 @@ class _MyHomePageState extends State<MyHomePage> {
         print(e.message);
       }
     }
-    return responseback;
   }
 
   void uploadFile() async {
@@ -151,13 +150,10 @@ class _MyHomePageState extends State<MyHomePage> {
               child: ElevatedButton(
                 onPressed: () async {
                   uploadFile();
-                  String responseback = fetchData();
+                  fetchData();
                   Navigator.push(
                     context,
-                    MaterialPageRoute(
-                        builder: (context) => ResultPage(
-                              responseback: responseback,
-                            )),
+                    MaterialPageRoute(builder: (context) => ResultPage()),
                   );
                 },
                 child: const Text('Start'),
