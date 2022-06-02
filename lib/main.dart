@@ -51,7 +51,7 @@ class _MyHomePageState extends State<MyHomePage> {
   //lists of jsonData
   //  String _jsonData;
 
-  void fetchData() async {
+  Future<String> fetchData() async {
     String responseback = "";
     try {
       apkfileurl = url + "/" + apkfilehash; //file url
@@ -87,6 +87,7 @@ class _MyHomePageState extends State<MyHomePage> {
         print(e.message);
       }
     }
+    return responseback;
   }
 
   void uploadFile() async {
@@ -150,11 +151,14 @@ class _MyHomePageState extends State<MyHomePage> {
               child: ElevatedButton(
                 onPressed: () async {
                   uploadFile();
-                  fetchData();
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => ResultPage()),
-                  );
+                  fetchData().then((value) {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) =>
+                              ResultPage(responseback: value)),
+                    );
+                  });
                 },
                 child: const Text('Start'),
               ),
