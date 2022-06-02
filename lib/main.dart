@@ -1,8 +1,10 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart' as diopack;
 import 'package:crypto/crypto.dart';
+import 'package:flutter/services.dart';
 import 'Screen/resultscreen.dart';
 
 void main() {
@@ -47,12 +49,13 @@ class _MyHomePageState extends State<MyHomePage> {
       "56a524fdd1fcfde4168d1621c5861595e3e7c6806749c44f7d73d65ca69b6f11"; //VirusTotal API key
 
   //lists of jsonData
-  var _postJson = [];
+  //  String _jsonData;
 
-  void fetchData() async {
+  String fetchData() {
+    String responseback = "";
     try {
       apkfileurl = url + "/" + apkfilehash; //file url
-      var response = await dio.get(
+      var response = dio.get(
         apkfileurl,
         options: diopack.Options(
           headers: {
@@ -65,10 +68,14 @@ class _MyHomePageState extends State<MyHomePage> {
       var jsonData = jsonDecode(response.toString());
 
       print(response.toString());
+      responseback = response.toString();
+      // response.pipe(File("test.txt").openWrite());
       // print(jsonData);
-      setState(() {
-        // _postJson = jsonData;
-      });
+      // print(jsonData['data']['attributes']['type_description']);
+      // setState(() {
+      //   _jsonData = response.toString();
+      // });
+
     } on diopack.DioError catch (e) {
       if (e.response != null) {
         print(e.response?.data);
@@ -80,6 +87,7 @@ class _MyHomePageState extends State<MyHomePage> {
         print(e.message);
       }
     }
+    return responseback;
   }
 
   void uploadFile() async {
@@ -117,16 +125,18 @@ class _MyHomePageState extends State<MyHomePage> {
               height: 45,
               child: ElevatedButton(
                 onPressed: () async {
-                  // uploadFile();
-                  // fetchData();
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => const ResultPage()),
-                  );
+                  final result = await FilePicker.platform.pickFiles();
+                  if (result == null) return;
+
+                  setState(() {
+                    apkfilename = result.files.first.name;
+                    apkfilebyte = result.files.first.bytes;
+                  });
                 },
-                child: const Text('Start'),
+                child: const Text('Upload APK File'),
               ),
             ),
+            Text(apkfilename), //APK name
             const SizedBox(
               //Empty space
               height: 80,
@@ -140,18 +150,19 @@ class _MyHomePageState extends State<MyHomePage> {
               height: 45,
               child: ElevatedButton(
                 onPressed: () async {
-                  final result = await FilePicker.platform.pickFiles();
-                  if (result == null) return;
-
-                  setState(() {
-                    apkfilename = result.files.first.name;
-                    apkfilebyte = result.files.first.bytes;
-                  });
+                  uploadFile();
+                  String responseback = fetchData();
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => ResultPage(
+                              responseback: responseback,
+                            )),
+                  );
                 },
-                child: const Text('Upload APK file'),
+                child: const Text('Start'),
               ),
             ),
-            Text(apkfilename),
           ],
         ),
       ),
