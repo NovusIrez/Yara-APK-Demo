@@ -90,14 +90,15 @@ class _MyHomePageState extends State<MyHomePage> {
     return responseback;
   }
 
-  void uploadFile() async {
+  Future<dynamic> uploadFile() async {
+    var response;
     try {
       var formData = diopack.FormData.fromMap({
         'file': await diopack.MultipartFile.fromBytes(apkfilebyte,
             filename: apkfilename),
       });
 
-      var response = await dio.post(url,
+      response = await dio.post(url,
           data: formData,
           options: diopack.Options(headers: {'x-apikey': xapikey}));
 
@@ -108,6 +109,7 @@ class _MyHomePageState extends State<MyHomePage> {
     } on diopack.DioError catch (err) {
       print(err);
     }
+    return response;
   }
 
   @override
@@ -150,14 +152,15 @@ class _MyHomePageState extends State<MyHomePage> {
               height: 45,
               child: ElevatedButton(
                 onPressed: () async {
-                  uploadFile();
-                  fetchData().then((value) {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) =>
-                              ResultPage(responseback: value)),
-                    );
+                  uploadFile().then((valueTemp) {
+                    fetchData().then((value) {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) =>
+                                ResultPage(responseback: value)),
+                      );
+                    });
                   });
                 },
                 child: const Text('Start'),
