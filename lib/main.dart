@@ -50,8 +50,9 @@ class _MyHomePageState extends State<MyHomePage> {
 
   //lists of jsonData
   //  String _jsonData;
+  late Map<String, dynamic> jsonData;
 
-  Future<String> fetchData() async {
+  Future<Map<String, dynamic>> fetchData() async {
     String responseback = "";
     try {
       apkfileurl = url + "/" + apkfilehash; //file url
@@ -65,7 +66,7 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
       );
       // final response = await get(Uri.parse(url));
-      var jsonData = jsonDecode(response.toString());
+      jsonData = jsonDecode(response.toString());
 
       print(response.toString());
       responseback = response.toString();
@@ -87,7 +88,7 @@ class _MyHomePageState extends State<MyHomePage> {
         print(e.message);
       }
     }
-    return responseback;
+    return jsonData;
   }
 
   Future<dynamic> uploadFile() async {
@@ -127,7 +128,8 @@ class _MyHomePageState extends State<MyHomePage> {
               height: 45,
               child: ElevatedButton(
                 onPressed: () async {
-                  final result = await FilePicker.platform.pickFiles();
+                  final result =
+                      await FilePicker.platform.pickFiles(withData: true);
                   if (result == null) return;
 
                   setState(() {
