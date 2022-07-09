@@ -3,6 +3,8 @@ import 'dart:io';
 import 'package:path_provider/path_provider.dart';
 import 'package:flutter/material.dart';
 
+import 'package:yara_apk/VirusTotalReport.dart';
+
 class ResultPage extends StatelessWidget {
   ResultPage({Key? key, required this.responseback}) : super(key: key);
   Map<String, dynamic> responseback;
@@ -20,7 +22,10 @@ class ResultPage extends StatelessWidget {
             width: 300,
             height: 45,
             child: ElevatedButton(
-              onPressed: () async {},
+              onPressed: () async {
+                var report = VTReport.fromJson(responseback);
+                print('Sha256 = ${report.data?.attributes?.sha256}');
+              },
               child: const Text('Download APK details'),
             ),
           ),
