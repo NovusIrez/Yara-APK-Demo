@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:dio/dio.dart' as diopack;
 import 'package:crypto/crypto.dart';
 import 'package:flutter/services.dart';
+import 'package:overlay_support/overlay_support.dart';
 import 'Screen/resultscreen.dart';
 
 void main() {
@@ -16,12 +17,14 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Yara Demo',
-      theme: ThemeData(
-        primarySwatch: Colors.blueGrey,
+    return OverlaySupport(
+      child: MaterialApp(
+        title: 'Yara Demo',
+        theme: ThemeData(
+          primarySwatch: Colors.blueGrey,
+        ),
+        home: const MyHomePage(title: 'Home Page'),
       ),
-      home: const MyHomePage(title: 'Home Page'),
     );
   }
 }
