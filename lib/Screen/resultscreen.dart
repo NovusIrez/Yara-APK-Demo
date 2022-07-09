@@ -11,19 +11,30 @@ class ResultPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    var report = VTReport.fromJson(responseback);
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Analysis Result'),
       ),
-      body: Row(
+      body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
+          const SizedBox(
+            //Empty space
+            height: 80,
+          ),
+          Text('APK Name: ${report.data?.attributes?.meaningfulName}'),
+          Text('Sha256: ${report.data?.attributes?.sha256}'),
+          const SizedBox(
+            //Empty space
+            height: 80,
+          ),
           SizedBox(
             width: 300,
             height: 45,
             child: ElevatedButton(
               onPressed: () async {
-                var report = VTReport.fromJson(responseback);
                 print('Sha256 = ${report.data?.attributes?.sha256}');
               },
               child: const Text('Download APK details'),
