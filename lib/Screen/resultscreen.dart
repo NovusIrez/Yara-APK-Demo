@@ -9,7 +9,7 @@ import 'package:yara_apk/VirusTotalReport.dart';
 class ResultPage extends StatelessWidget {
   ResultPage({Key? key, required this.responseback}) : super(key: key);
   Map<String, dynamic> responseback;
-  String downloadnoti = '';
+  // String downloadnoti = '';
 
   @override
   Widget build(BuildContext context) {
@@ -28,6 +28,13 @@ class ResultPage extends StatelessWidget {
           ),
           Text('APK Name: ${report.data?.attributes?.meaningfulName}'),
           Text('Sha256: ${report.data?.attributes?.sha256}'),
+          Text('Detections:-'),
+          Text(
+              'Malicious: ${report.data?.attributes?.lastAnalysisStats?.malicious}'),
+          Text(
+              'Undetected: ${report.data?.attributes?.lastAnalysisStats?.undetected}'),
+          Text('Yara Rule Source:-'),
+          Text('${report.data?.attributes?.crowdsourcedYaraResults}'),
           const SizedBox(
             //Empty space
             height: 80,
@@ -48,7 +55,7 @@ class ResultPage extends StatelessWidget {
               child: const Text('Download APK details'),
             ),
           ),
-          Text(downloadnoti),
+          // Text(downloadnoti),
         ],
       ),
     );
