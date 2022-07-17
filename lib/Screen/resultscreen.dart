@@ -62,8 +62,8 @@ class ResultPage extends StatelessWidget {
   }
 
   Future<String> get _localPath async {
-    final directory = await getApplicationDocumentsDirectory();
-
+    // final directory = await getApplicationDocumentsDirectory();
+    final directory = Directory('/storage/emulated/0/Download');
     return directory.path;
   }
 
