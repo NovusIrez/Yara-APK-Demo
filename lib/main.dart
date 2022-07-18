@@ -1,9 +1,12 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart';
 import 'package:dio/dio.dart' as diopack;
 import 'package:crypto/crypto.dart';
+import 'package:flutter/services.dart';
+import 'package:overlay_support/overlay_support.dart';
+import 'Screen/resultscreen.dart';
 
 void main() {
   runApp(const MyApp());
@@ -14,12 +17,14 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Yara Demo',
-      theme: ThemeData(
-        primarySwatch: Colors.blueGrey,
+    return OverlaySupport(
+      child: MaterialApp(
+        title: 'Yara Demo',
+        theme: ThemeData(
+          primarySwatch: Colors.blueGrey,
+        ),
+        home: const MyHomePage(title: 'Home Page'),
       ),
-      home: const MyHomePage(title: 'Home Page'),
     );
   }
 }
@@ -47,42 +52,34 @@ class _MyHomePageState extends State<MyHomePage> {
       "56a524fdd1fcfde4168d1621c5861595e3e7c6806749c44f7d73d65ca69b6f11"; //VirusTotal API key
 
   //lists of jsonData
-  var _postJson = [];
+  //  String _jsonData;
+  late Map<String, dynamic> jsonData;
 
-  void fetchData() async {
+  Future<Map<String, dynamic>> fetchData() async {
+    String responseback = "";
     try {
       apkfileurl = url + "/" + apkfilehash; //file url
       var response = await dio.get(
         apkfileurl,
-        // queryParameters: {
-        //   "Accept": "application/json",
-        //   "x-apikey": xapikey,
-        //   "Access-Control-Allow-Credentials": true,
-        //   "Access-Control-Allow-Headers":
-        //       "Origin,Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token",
-        //   "Access-Control-Allow-Origin": "*",
-        //   "Access-Control-Allow-Methods": "GET , POST",
-        // },
         options: diopack.Options(
           headers: {
             "Accept": "application/json",
             "x-apikey": xapikey,
-            // "Access-Control-Allow-Credentials": true,
-            // "Access-Control-Allow-Headers":
-            //     "Origin,Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token",
-            // "Access-Control-Allow-Origin": "*",
-            // "Access-Control-Allow-Methods": "GET , POST",
           },
         ),
       );
       // final response = await get(Uri.parse(url));
-      var jsonData = jsonDecode(response.toString());
+      jsonData = jsonDecode(response.toString());
 
       print(response.toString());
+      responseback = response.toString();
+      // response.pipe(File("test.txt").openWrite());
       // print(jsonData);
-      setState(() {
-        // _postJson = jsonData;
-      });
+      // print(jsonData['data']['attributes']['type_description']);
+      // setState(() {
+      //   _jsonData = response.toString();
+      // });
+
     } on diopack.DioError catch (e) {
       if (e.response != null) {
         print(e.response?.data);
@@ -94,16 +91,18 @@ class _MyHomePageState extends State<MyHomePage> {
         print(e.message);
       }
     }
+    return jsonData;
   }
 
-  void uploadFile() async {
+  Future<dynamic> uploadFile() async {
+    var response;
     try {
       var formData = diopack.FormData.fromMap({
         'file': await diopack.MultipartFile.fromBytes(apkfilebyte,
             filename: apkfilename),
       });
 
-      var response = await dio.post(url,
+      response = await dio.post(url,
           data: formData,
           options: diopack.Options(headers: {'x-apikey': xapikey}));
 
@@ -114,6 +113,7 @@ class _MyHomePageState extends State<MyHomePage> {
     } on diopack.DioError catch (err) {
       print(err);
     }
+    return response;
   }
 
   @override
@@ -131,12 +131,19 @@ class _MyHomePageState extends State<MyHomePage> {
               height: 45,
               child: ElevatedButton(
                 onPressed: () async {
-                  // uploadFile();
-                  fetchData();
+                  final result =
+                      await FilePicker.platform.pickFiles(withData: true);
+                  if (result == null) return;
+
+                  setState(() {
+                    apkfilename = result.files.first.name;
+                    apkfilebyte = result.files.first.bytes;
+                  });
                 },
-                child: const Text('Start'),
+                child: const Text('Upload APK File'),
               ),
             ),
+            Text(apkfilename), //APK name
             const SizedBox(
               //Empty space
               height: 80,
@@ -150,18 +157,20 @@ class _MyHomePageState extends State<MyHomePage> {
               height: 45,
               child: ElevatedButton(
                 onPressed: () async {
-                  final result = await FilePicker.platform.pickFiles();
-                  if (result == null) return;
-
-                  setState(() {
-                    apkfilename = result.files.first.name;
-                    apkfilebyte = result.files.first.bytes;
+                  uploadFile().then((valueTemp) {
+                    fetchData().then((value) {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) =>
+                                ResultPage(responseback: value)),
+                      );
+                    });
                   });
                 },
-                child: const Text('Upload APK file'),
+                child: const Text('Start'),
               ),
             ),
-            Text(apkfilename),
           ],
         ),
       ),
